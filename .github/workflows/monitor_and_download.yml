@@ -1,0 +1,190 @@
+name: Daily PS5 UMTX Jailbreak Monitor
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天运行一次
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  check_and_process_ps5_umtx:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Create log directory if it doesn't exist
+      - name: Create log directory
+        run: mkdir -p log
+
+      # Step 3: Get the latest commit hash from GitHub
+      - name: Get the latest commit hash from GitHub
+        id: get_commit
+        run: |
+          latest_commit=$(curl -s https://api.github.com/repos/idlesauce/PS5-UMTX-Jailbreak/commits/main | jq -r '.sha')
+          echo "Latest commit hash: $latest_commit"
+          echo $latest_commit > log/latest_commit.txt
+
+      # Step 4: Get the latest commit message from GitHub
+      - name: Get the latest commit message from GitHub
+        id: get_commit_message
+        run: |
+          commit_message=$(curl -s https://api.github.com/repos/idlesauce/PS5-UMTX-Jailbreak/commits/main | jq -r '.commit.message')
+          commit_message=$(echo "$commit_message" | tr -d '\n')  # Remove newlines
+          commit_url="https://github.com/idlesauce/PS5-UMTX-Jailbreak/commit/$(cat log/latest_commit.txt)"
+          echo "Commit message: $commit_message"
+          echo "commit_message=$commit_message" >> $GITHUB_ENV
+          echo "commit_url=$commit_url" >> $GITHUB_ENV
+
+      # Step 5: Ensure previous_commit.txt exists and initialize if necessary
+      - name: Ensure previous_commit.txt exists
+        run: |
+          if [ ! -f log/previous_commit.txt ]; then
+            echo "no_previous_commit" > log/previous_commit.txt
+          fi
+
+      # Step 6: Compare latest commit with previous commit and set skip variable
+      - name: Compare with previous commit and set skip variable
+        id: check_commit
+        run: |
+          latest_commit=$(cat log/latest_commit.txt)
+          previous_commit=$(cat log/previous_commit.txt)
+          if [ "$latest_commit" == "$previous_commit" ]; then
+            echo "skip=true" >> $GITHUB_ENV
+          else
+            echo "skip=false" >> $GITHUB_ENV
+          fi
+
+      # Step 7: Get previous tag from GitHub API
+      - name: Get previous version tag from GitHub
+        run: |
+          # 获取 GitHub 上的发布信息
+          releases=$(curl -s https://api.github.com/repos/LightningMods/etaHEN/releases)
+
+          # 输出 API 响应内容来检查
+          echo "Releases API response: $releases"
+
+          # 获取最新和前一个版本的 tag
+          latest_tag=$(echo "$releases" | jq -r '.[0].tag_name')
+          previous_tag=$(echo "$releases" | jq -r '.[1].tag_name')
+
+          # 输出调试信息
+          echo "latest_tag=$latest_tag"
+          echo "previous_tag=$previous_tag"
+
+          # 确保 previous_tag 有值
+          if [ -z "$previous_tag" ]; then
+            echo "Error: previous_tag is empty. Exiting."
+            exit 1
+          fi
+
+          # 将 previous_tag 设置为环境变量
+          echo "previous_tag=$previous_tag" >> $GITHUB_ENV
+
+      # Step 8: Download repository archive if skip is not true
+      - name: Download repository archive
+        if: ${{ env.skip != 'true' }}
+        run: curl -L https://github.com/idlesauce/PS5-UMTX-Jailbreak/archive/refs/heads/main.zip -o repo.zip
+
+      # Step 9: Unzip repository archive
+      - name: Unzip repository archive
+        if: ${{ env.skip != 'true' }}
+        run: unzip -q repo.zip
+
+      # Step 10: Download etaHEN old version bin file
+      - name: Download etaHEN old version bin file
+        if: ${{ env.skip != 'true' }}
+        run: |
+          # 获取最新的版本发布信息
+          releases=$(curl -s https://api.github.com/repos/LightningMods/etaHEN/releases)
+          
+          # 获取最新版本的 tag 和前一个版本的 tag
+          latest_tag=$(echo "$releases" | jq -r '.[0].tag_name')
+          previous_tag=$(echo "$releases" | jq -r '.[1].tag_name')
+
+          # 输出调试信息
+          echo "latest_tag=$latest_tag"
+          echo "previous_tag=$previous_tag"
+
+          # 检查 previous_tag 是否有效
+          if [ -z "$previous_tag" ]; then
+            echo "Error: Unable to retrieve the previous tag"
+            exit 1
+          fi
+
+          # 获取与 previous_tag 相关的 bin 文件下载链接
+          bin_file_url=$(curl -s https://api.github.com/repos/LightningMods/etaHEN/releases/tags/$previous_tag | jq -r '.assets[] | select(.name | endswith(".bin")) | .browser_download_url')
+
+          # 输出下载链接以供调试
+          echo "bin_file_url=$bin_file_url"
+
+          # 如果 bin 文件链接为空，提示错误
+          if [ -z "$bin_file_url" ]; then
+            echo "Error: Unable to find the .bin file for the tag $previous_tag"
+            exit 1
+          fi
+
+          # 下载 etaHEN old bin 文件
+          curl -L $bin_file_url -o etaHENold.bin
+
+          # 移动文件到指定目录
+          mv etaHENold.bin PS5-UMTX-Jailbreak-main/document/en/ps5/payloads/
+
+      # Step 11: Modify payload_map.js with previous tag
+      - name: Modify payload_map.js with previous tag
+        if: ${{ env.skip != 'true' }}
+        run: |
+          version="${{ env.previous_tag }}"  # 获取之前设置的环境变量
+          echo "version=$version"  # 输出调试信息
+          
+          # 将 py 脚本从主目录复制到目标目录
+          cp custom.py PS5-UMTX-Jailbreak-main/document/en/ps5/
+
+          # 执行修改脚本
+          python3 PS5-UMTX-Jailbreak-main/document/en/ps5/custom.py $version  
+
+      # Step 12: Modify appcache_manifest_generator.py
+      - name: Modify appcache_manifest_generator.py
+        if: ${{ env.skip != 'true' }}
+        run: |
+          sed -i '/user_input = input(f"Found .index.html./,/exit(1)/d' PS5-UMTX-Jailbreak-main/appcache_manifest_generator.py
+
+      # Step 13: Run appcache_manifest_generator.py
+      - name: Run appcache_manifest_generator.py
+        if: ${{ env.skip != 'true' }}
+        run: |
+          cd PS5-UMTX-Jailbreak-main
+          python3 appcache_manifest_generator.py
+
+      # Step 14: Clean up main branch
+
+
+      # Step 15: Copy files from PS5-UMTX-Jailbreak-main/document/en/ps5 to main
+      - name: Copy files to main
+        if: ${{ env.skip != 'true' }}
+        run: |
+          # Ensure the directory exists
+          if [ ! -d "PS5-UMTX-Jailbreak-main/document/en/ps5" ]; then
+            echo "Error: Directory PS5-UMTX-Jailbreak-main/document/en/ps5 does not exist."
+            exit 1
+          fi
+
+          cp -r PS5-UMTX-Jailbreak-main/document/en/ps5/* ./
+
+      # Step 16: Delete repo.zip and PS5-UMTX-Jailbreak-main
+      - name: Delete repo.zip and PS5-UMTX-Jailbreak-main
+        if: ${{ env.skip != 'true' }}
+        run: rm -rf repo.zip PS5-UMTX-Jailbreak-main
+
+      # Step 17: Update commit hash log and push changes
+      - name: Commit and push commit info to log directory
+        if: ${{ env.skip != 'true' }}
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          echo "$(cat log/latest_commit.txt)" > log/previous_commit.txt
+          git add log/previous_commit.txt log/latest_commit.txt
+          git add .  # Add the newly copied files
+          git commit -m "Update commit hash records and copied files"
+          git push origin main
