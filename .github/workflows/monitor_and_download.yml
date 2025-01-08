@@ -27,15 +27,6 @@ jobs:
           echo $latest_commit > log/latest_commit.txt
 
       # Step 4: Get the latest commit message from GitHub
-      - name: Get the latest commit message from GitHub
-        id: get_commit_message
-        run: |
-          commit_message=$(curl -s https://api.github.com/repos/idlesauce/PS5-UMTX-Jailbreak/commits/main | jq -r '.commit.message')
-          commit_message=$(echo "$commit_message" | tr -d '\n')  # Remove newlines
-          commit_url="https://github.com/idlesauce/PS5-UMTX-Jailbreak/commit/$(cat log/latest_commit.txt)"
-          echo "Commit message: $commit_message"
-          echo "commit_message=$commit_message" >> $GITHUB_ENV
-          echo "commit_url=$commit_url" >> $GITHUB_ENV
 
       # Step 5: Ensure previous_commit.txt exists and initialize if necessary
       - name: Ensure previous_commit.txt exists
