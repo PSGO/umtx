@@ -131,9 +131,11 @@ jobs:
           
           # 将 py 脚本从主目录复制到目标目录
           cp custom.py PS5-UMTX-Jailbreak-main/document/en/ps5/
+          cp custom_cn.py PS5-UMTX-Jailbreak-main/document/en/ps5/
 
-          # 执行修改脚本
+          # 执行修改脚本&中文
           python3 PS5-UMTX-Jailbreak-main/document/en/ps5/custom.py $version  
+          python3 PS5-UMTX-Jailbreak-main/document/en/ps5/custom_cn.py
 
       # Step 12: Modify appcache_manifest_generator.py
       - name: Modify appcache_manifest_generator.py
