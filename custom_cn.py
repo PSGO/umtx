@@ -28,6 +28,8 @@ for i, line in enumerate(content):
                 content[i] = content[i].replace(display_title_match.group(1), display_title_match.group(1) + " (金手指)")
             elif 'appcache' in display_title:
                 content[i] = content[i].replace(display_title_match.group(1), display_title_match.group(1) + " (清缓存)")
+            elif 'remoteplay' in display_title:
+                content[i] = content[i].replace(display_title_match.group(1), display_title_match.group(1) + " (串流)")
 
 # 将修改后的内容保存回文件
 with open(js_file_path, 'w', encoding='utf-8') as file:
