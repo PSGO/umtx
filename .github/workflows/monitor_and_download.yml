@@ -2,8 +2,7 @@ name: Daily PS5 UMTX Jailbreak Monitor
 
 on:
   schedule:
-    # 每六小时执行一次
-    - cron: '0 */6 * * *'
+    - cron: '0 * * * *'  # 每小时执行一次
   workflow_dispatch:  # 允许手动触发
 
 jobs:
@@ -106,8 +105,8 @@ jobs:
             exit 1
           fi
 
-          # 获取与 previous_tag 相关的 bin 文件下载链接
-          bin_file_url=$(curl -s https://api.github.com/repos/LightningMods/etaHEN/releases/tags/$previous_tag | jq -r '.assets[] | select(.name | endswith(".bin")) | .browser_download_url')
+          # 获取与 previous_tag 相关的 bin 文件下载链接，注意未来可能有多个bin文件也可能是压缩文件
+          bin_file_url=$(curl -s https://api.github.com/repos/LightningMods/etaHEN/releases/tags/$previous_tag | jq -r '.assets[] | select(.name | test("etahen"; "i") and (test("toolbox"; "i") | not) and endswith(".bin")) | .browser_download_url')
 
           # 输出下载链接以供调试
           echo "bin_file_url=$bin_file_url"
