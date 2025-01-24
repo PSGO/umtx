@@ -57,9 +57,10 @@ jobs:
           # 输出 API 响应内容来检查
           echo "Releases API response: $releases"
 
-          # 获取最新和前一个版本的 tag
-          latest_tag=$(echo "$releases" | jq -r '.[0].tag_name')
-          previous_tag=$(echo "$releases" | jq -r '.[1].tag_name')
+          # 获取有效的最新和前一个版本的 tag（排除包含 'test' 的标签，忽略大小写）
+          tags=$(echo "$releases" | jq -r '.[].tag_name' | grep -vi "test")
+          latest_tag=$(echo "$tags" | sed -n '1p')  # 获取第一个有效 tag
+          previous_tag=$(echo "$tags" | sed -n '2p')  # 获取第二个有效 tag
 
           # 输出调试信息
           echo "latest_tag=$latest_tag"
@@ -88,12 +89,13 @@ jobs:
       - name: Download etaHEN old version bin file
         if: ${{ env.skip != 'true' }}
         run: |
-          # 获取最新的版本发布信息
+          # 获取发布信息并过滤掉包含 "test" 的 tag
           releases=$(curl -s https://api.github.com/repos/LightningMods/etaHEN/releases)
-          
-          # 获取最新版本的 tag 和前一个版本的 tag
-          latest_tag=$(echo "$releases" | jq -r '.[0].tag_name')
-          previous_tag=$(echo "$releases" | jq -r '.[1].tag_name')
+          tags=$(echo "$releases" | jq -r '.[].tag_name' | grep -vi "test")
+
+          # 获取最新和前一个有效 tag
+          latest_tag=$(echo "$tags" | sed -n '1p')
+          previous_tag=$(echo "$tags" | sed -n '2p')
 
           # 输出调试信息
           echo "latest_tag=$latest_tag"
