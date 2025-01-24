@@ -17,7 +17,7 @@ for i, line in enumerate(content):
         if display_title_match:
             display_title = display_title_match.group(1).lower()
             if 'etahen' in display_title:
-                content[i] = content[i].replace(display_title_match.group(1), display_title_match.group(1) + " (支持PS5游戏)")
+                content[i] = content[i].replace(display_title_match.group(1), display_title_match.group(1) + " (支持PS5/4游戏)")
             elif 'kstuff' in display_title:
                 content[i] = content[i].replace(display_title_match.group(1), display_title_match.group(1) + " (支持PS4游戏)")
             elif 'byepervisor hen' in display_title:
