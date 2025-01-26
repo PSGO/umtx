@@ -52,7 +52,7 @@ jobs:
         if: ${{ env.skip != 'true' }}
         run: |
           # 获取 GitHub 上的发布信息
-          releases=$(curl -s https://api.github.com/repos/LightningMods/etaHEN/releases)
+          releases=$(curl -s https://api.github.com/repos/etaHEN/etaHEN/releases)
 
           # 输出 API 响应内容来检查
           echo "Releases API response: $releases"
