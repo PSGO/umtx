@@ -173,6 +173,13 @@ jobs:
         if: ${{ env.skip != 'true' }}
         run: rm -rf repo.zip PS5-UMTX-Jailbreak-main
 
+      # 检测并打印剩余配额
+      - name: Check GitHub API Rate Limit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -s -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/rate_limit | jq '.rate | "Limit: \(.limit), Remaining: \(.remaining), Reset: \(.reset)"'    
+
       # Step 17: Update commit hash log and push changes
       - name: Commit and push commit info to log directory
         if: ${{ env.skip != 'true' }}
