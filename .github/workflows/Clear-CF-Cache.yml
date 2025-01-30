@@ -1,0 +1,29 @@
+name: Clear Cloudflare Cache
+
+on:
+  push:
+    branches:
+      - main  # 只在 main 分支更新时清除缓存
+
+jobs:
+  purge-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Purge Everything from Cloudflare Cache
+        run: |
+          RESPONSE=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE_ID }}/purge_cache" \
+               -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
+               -H "Content-Type: application/json" \
+               --data '{"purge_everything":true}')
+          
+          echo "Cloudflare API Response:"
+          echo "$RESPONSE"
+      
+          SUCCESS=$(echo "$RESPONSE" | jq -r '.success')
+      
+          if [ "$SUCCESS" = "true" ]; then
+            echo "✅ Cloudflare 缓存清除成功！"
+          else
+            echo "❌ Cloudflare 缓存清除失败！"
+            exit 1
+          fi
