@@ -33,7 +33,7 @@ const payload_map = [
     // etaHEN is added twice so that on 1.xx-2.xx you can load it in webkit only mode too
     // but on 3.xx-4.xx it only shows in kernel exploit mode since it needs the 9020 elf loader for kstuff
     {
-        displayTitle: "etaHEN (支持PS5游戏)",
+        displayTitle: "etaHEN (支持PS5/4游戏)",
         description: "AIO HEN",
         fileName: "etaHEN.bin",
         author: "LightningMods, Buzzer, sleirsgoevy, ChendoChap, astrelsky, illusion, CTN, SiSTR0, Nomadic",
@@ -43,7 +43,7 @@ const payload_map = [
         supportedFirmwares: ["3.", "4."]
     },
     {
-        displayTitle: "etaHEN v1.08b-old (支持PS5游戏)",
+        displayTitle: "etaHEN v1.08b-old (支持PS5/4游戏)",
         description: "AIO HEN",
         fileName: "etaHENold.bin",
         author: "LightningMods, Buzzer, sleirsgoevy, ChendoChap, astrelsky, illusion, CTN, SiSTR0, Nomadic",
@@ -53,7 +53,7 @@ const payload_map = [
         supportedFirmwares: ["3.", "4."]
     },
     {
-        displayTitle: "etaHEN (支持PS5游戏)",
+        displayTitle: "etaHEN (支持PS5/4游戏)",
         description: "AIO HEN",
         fileName: "etaHEN.bin",
         author: "LightningMods, Buzzer, sleirsgoevy, ChendoChap, astrelsky, illusion, CTN, SiSTR0, Nomadic",
@@ -64,7 +64,7 @@ const payload_map = [
         toPort: 9021
     },
     {
-        displayTitle: "etaHEN v1.08b-old (支持PS5游戏)",
+        displayTitle: "etaHEN v1.08b-old (支持PS5/4游戏)",
         description: "AIO HEN",
         fileName: "etaHENold.bin",
         author: "LightningMods, Buzzer, sleirsgoevy, ChendoChap, astrelsky, illusion, CTN, SiSTR0, Nomadic",
@@ -187,7 +187,7 @@ const payload_map = [
         supportedFirmwares: ["1.", "2.", "3.", "4."]
     },
     {
-        displayTitle: "ps5-remoteplay-get-pin",
+        displayTitle: "ps5-remoteplay-get-pin (串流)",
         description: "Get Remote Play PIN for offline activated users. Send again to cancel.",
         fileName: "rp-get-pin.elf",
         author: "idlesauce",
