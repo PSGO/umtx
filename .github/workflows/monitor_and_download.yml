@@ -133,7 +133,12 @@ jobs:
       - name: Modify appcache_manifest_generator.py
         if: ${{ env.skip != 'true' }}
         run: |
-          sed -i '/user_input = input(f"Found .index.html./,/exit(1)/d' PS5-UMTX-Jailbreak-main/appcache_manifest_generator.py
+          # if grep -qE 'user_input = input\(f"Found .index.html.' PS5-UMTX-Jailbreak-main/appcache_manifest_generator.py; then
+            sed -i '/user_input = input(f"Found .index.html./,/exit(1)/d' PS5-UMTX-Jailbreak-main/appcache_manifest_generator.py
+          # else
+            # echo "No match found. Exiting workflow."
+            # exit 1
+          # fi
 
       # Step 13: Run appcache_manifest_generator.py
       - name: Run appcache_manifest_generator.py
