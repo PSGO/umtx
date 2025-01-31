@@ -57,10 +57,16 @@ jobs:
           # 输出 API 响应内容来检查
           echo "Releases API response: $releases"
 
-          # 获取有效的最新和前一个版本的 tag（排除包含 'test' 的标签，忽略大小写）
-          tags=$(echo "$releases" | jq -r '.[].tag_name' | grep -vi "test")
-          latest_tag=$(echo "$tags" | sed -n '1p')  # 获取第一个有效 tag
-          previous_tag=$(echo "$tags" | sed -n '2p')  # 获取第二个有效 tag
+          # 允许用户配置多个排除关键字（用 | 分隔）
+          EXCLUDE_PATTERNS="test|beta|alpha|alpha|1.9"
+
+          # 获取所有 tag，并根据 EXCLUDE_PATTERNS 进行过滤（忽略大小写）
+          tags=$(echo "$releases" | jq -r '.[].tag_name' | grep -Evi "$EXCLUDE_PATTERNS")
+
+          # 获取前两个有效的 tag
+          latest_tag=$(echo "$tags" | sed -n '1p')
+          previous_tag=$(echo "$tags" | sed -n '2p')
+
 
           # 输出调试信息
           echo "latest_tag=$latest_tag"
