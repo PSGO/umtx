@@ -47,8 +47,18 @@ jobs:
             echo "skip=false" >> $GITHUB_ENV
           fi
 
-      # Step 7: Get previous tag from GitHub API
-      - name: Get previous version tag from GitHub
+      # Step 8: Download repository archive if skip is not true
+      - name: Download repository archive
+        if: ${{ env.skip != 'true' }}
+        run: curl -L https://github.com/idlesauce/PS5-UMTX-Jailbreak/archive/refs/heads/main.zip -o repo.zip
+
+      # Step 9: Unzip repository archive
+      - name: Unzip repository archive
+        if: ${{ env.skip != 'true' }}
+        run: unzip -q repo.zip
+
+      # Step 10: Download etaHEN old version bin file
+      - name: Get previous version tag from GitHub Download etaHEN old version bin file
         if: ${{ env.skip != 'true' }}
         run: |
           # 获取 GitHub 上的发布信息
@@ -57,10 +67,15 @@ jobs:
           # 输出 API 响应内容来检查
           echo "Releases API response: $releases"
 
-          # 获取有效的最新和前一个版本的 tag（排除包含 'test' 的标签，忽略大小写）
-          tags=$(echo "$releases" | jq -r '.[].tag_name' | grep -vi "test")
-          latest_tag=$(echo "$tags" | sed -n '1p')  # 获取第一个有效 tag
-          previous_tag=$(echo "$tags" | sed -n '2p')  # 获取第二个有效 tag
+          # 允许用户配置多个排除关键字（用 | 分隔）
+          EXCLUDE_PATTERNS="test|beta|alpha|alpha|1.9"
+
+          # 获取所有 tag，并根据 EXCLUDE_PATTERNS 进行过滤（忽略大小写）
+          tags=$(echo "$releases" | jq -r '.[].tag_name' | grep -Evi "$EXCLUDE_PATTERNS")
+
+          # 获取前两个有效的 tag
+          latest_tag=$(echo "$tags" | sed -n '1p')
+          previous_tag=$(echo "$tags" | sed -n '2p')
 
           # 输出调试信息
           echo "latest_tag=$latest_tag"
@@ -74,33 +89,7 @@ jobs:
 
           # 将 previous_tag 设置为环境变量
           echo "previous_tag=$previous_tag" >> $GITHUB_ENV
-
-      # Step 8: Download repository archive if skip is not true
-      - name: Download repository archive
-        if: ${{ env.skip != 'true' }}
-        run: curl -L https://github.com/idlesauce/PS5-UMTX-Jailbreak/archive/refs/heads/main.zip -o repo.zip
-
-      # Step 9: Unzip repository archive
-      - name: Unzip repository archive
-        if: ${{ env.skip != 'true' }}
-        run: unzip -q repo.zip
-
-      # Step 10: Download etaHEN old version bin file
-      - name: Download etaHEN old version bin file
-        if: ${{ env.skip != 'true' }}
-        run: |
-          # 获取发布信息并过滤掉包含 "test" 的 tag
-          releases=$(curl -s https://api.github.com/repos/LightningMods/etaHEN/releases)
-          tags=$(echo "$releases" | jq -r '.[].tag_name' | grep -vi "test")
-
-          # 获取最新和前一个有效 tag
-          latest_tag=$(echo "$tags" | sed -n '1p')
-          previous_tag=$(echo "$tags" | sed -n '2p')
-
-          # 输出调试信息
-          echo "latest_tag=$latest_tag"
-          echo "previous_tag=$previous_tag"
-
+          
           # 检查 previous_tag 是否有效
           if [ -z "$previous_tag" ]; then
             echo "Error: Unable to retrieve the previous tag"
