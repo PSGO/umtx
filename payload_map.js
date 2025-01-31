@@ -43,13 +43,13 @@ const payload_map = [
         supportedFirmwares: ["3.", "4."]
     },
     {
-        displayTitle: "etaHEN v1.08b-old (支持PS5/4游戏)",
+        displayTitle: "etaHEN v1.9b-old (支持PS5/4游戏)",
         description: "AIO HEN",
         fileName: "etaHENold.bin",
         author: "LightningMods, Buzzer, sleirsgoevy, ChendoChap, astrelsky, illusion, CTN, SiSTR0, Nomadic",
         projectSource: "https://github.com/LightningMods/etaHEN",
         binarySource: "https://github.com/LightningMods/etaHEN/releases/download/1.9b/etaHENold.bin",
-        version: "1.08b",
+        version: "1.9b",
         supportedFirmwares: ["3.", "4."]
     },
     {
@@ -64,13 +64,13 @@ const payload_map = [
         toPort: 9021
     },
     {
-        displayTitle: "etaHEN v1.08b-old (支持PS5/4游戏)",
+        displayTitle: "etaHEN v1.9b-old (支持PS5/4游戏)",
         description: "AIO HEN",
         fileName: "etaHENold.bin",
         author: "LightningMods, Buzzer, sleirsgoevy, ChendoChap, astrelsky, illusion, CTN, SiSTR0, Nomadic",
         projectSource: "https://github.com/LightningMods/etaHEN",
         binarySource: "https://github.com/LightningMods/etaHEN/releases/download/1.9b/etaHENold.bin",
-        version: "1.08b",
+        version: "1.9b",
         supportedFirmwares: ["1.", "2."],
         toPort: 9021
     },
