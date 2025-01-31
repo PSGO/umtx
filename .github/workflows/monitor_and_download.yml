@@ -57,7 +57,7 @@ jobs:
           #echo "Releases API response: $releases"
 
           # 排除关键字（用 | 分隔）
-          EXCLUDE_PATTERNS="test|beta|alpha"
+          EXCLUDE_PATTERNS="test|beta|alpha|1.9"
 
           # 获取所有 tag
           tags=$(echo "$releases" | jq -r '.[].tag_name')
@@ -93,7 +93,7 @@ jobs:
           #echo "Releases API response: $releases"
 
           # 排除etaHEN标签关键字 排除掉一些不佳的版本（用 | 分隔）
-          EXCLUDE_PATTERNS="test|beta|alpha"
+          EXCLUDE_PATTERNS="test|beta|alpha|1.9"
 
           # 获取所有 tag
           tags=$(echo "$releases" | jq -r '.[].tag_name')
