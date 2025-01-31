@@ -68,7 +68,7 @@ jobs:
           echo "Releases API response: $releases"
 
           # 允许用户配置多个排除关键字（用 | 分隔）
-          EXCLUDE_PATTERNS="test|beta|alpha|alpha|1.9"
+          EXCLUDE_PATTERNS="test|beta|alpha"
 
           # 获取所有 tag，并根据 EXCLUDE_PATTERNS 进行过滤（忽略大小写）
           tags=$(echo "$releases" | jq -r '.[].tag_name' | grep -Evi "$EXCLUDE_PATTERNS")
