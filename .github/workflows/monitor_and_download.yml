@@ -47,6 +47,31 @@ jobs:
             echo "skip=false" >> $GITHUB_ENV
           fi
 
+      # Step 7: Get etaHEN version New + Old 这里只是打印不影响下载
+      - name: Get previous version
+        run: |
+          # 获取 GitHub 上的发布信息
+          releases=$(curl -s https://api.github.com/repos/etaHEN/etaHEN/releases)
+
+          # 输出 API 响应内容来检查
+          #echo "Releases API response: $releases"
+
+          # 排除关键字（用 | 分隔）
+          EXCLUDE_PATTERNS="test|beta|alpha"
+
+          # 获取所有 tag
+          tags=$(echo "$releases" | jq -r '.[].tag_name')
+
+          # 获取最新的 tag（不排除任何标签）
+          latest_tag=$(echo "$tags" | sed -n '1p')
+
+          # 获取前一个有效的 tag，排除 EXCLUDE_PATTERNS 中的关键字
+          previous_tag=$(echo "$tags" | sed '1d' | grep -Evi "$EXCLUDE_PATTERNS" | sed -n '1p')
+          
+          # 输出调试信息
+          echo "latest_tag=$latest_tag"
+          echo "previous_tag=$previous_tag"
+
       # Step 8: Download repository archive if skip is not true
       - name: Download repository archive
         if: ${{ env.skip != 'true' }}
@@ -67,16 +92,18 @@ jobs:
           # 输出 API 响应内容来检查
           #echo "Releases API response: $releases"
 
-          # 允许用户配置多个排除关键字（用 | 分隔）
+          # 排除etaHEN标签关键字 排除掉一些不佳的版本（用 | 分隔）
           EXCLUDE_PATTERNS="test|beta|alpha"
 
-          # 获取所有 tag，并根据 EXCLUDE_PATTERNS 进行过滤（忽略大小写）
-          tags=$(echo "$releases" | jq -r '.[].tag_name' | grep -Evi "$EXCLUDE_PATTERNS")
+          # 获取所有 tag
+          tags=$(echo "$releases" | jq -r '.[].tag_name')
 
-          # 获取前两个有效的 tag
+          # 获取最新的 tag（不排除任何标签）
           latest_tag=$(echo "$tags" | sed -n '1p')
-          previous_tag=$(echo "$tags" | sed -n '2p')
 
+          # 获取前一个有效的 tag，排除 EXCLUDE_PATTERNS 中的关键字
+          previous_tag=$(echo "$tags" | sed '1d' | grep -Evi "$EXCLUDE_PATTERNS" | sed -n '1p')
+          
           # 输出调试信息
           echo "latest_tag=$latest_tag"
           echo "previous_tag=$previous_tag"
