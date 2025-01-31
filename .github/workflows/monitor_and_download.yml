@@ -65,7 +65,7 @@ jobs:
           releases=$(curl -s https://api.github.com/repos/etaHEN/etaHEN/releases)
 
           # 输出 API 响应内容来检查
-          echo "Releases API response: $releases"
+          #echo "Releases API response: $releases"
 
           # 允许用户配置多个排除关键字（用 | 分隔）
           EXCLUDE_PATTERNS="test|beta|alpha"
@@ -97,7 +97,7 @@ jobs:
           fi
 
           # 获取与 previous_tag 相关的 bin 文件下载链接，注意未来可能有多个bin文件也可能是压缩文件
-          bin_file_url=$(curl -s https://api.github.com/repos/LightningMods/etaHEN/releases/tags/$previous_tag | jq -r '.assets[] | select(.name | test("etahen"; "i") and (test("toolbox"; "i") | not) and endswith(".bin")) | .browser_download_url')
+          bin_file_url=$(curl -s https://api.github.com/repos/etaHEN/etaHEN/releases/tags/$previous_tag | jq -r '.assets[] | select(.name | test("etahen"; "i") and (test("toolbox"; "i") | not) and endswith(".bin")) | .browser_download_url')
 
           # 输出下载链接以供调试
           echo "bin_file_url=$bin_file_url"
