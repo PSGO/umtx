@@ -48,7 +48,7 @@ jobs:
           fi
 
       # Step 7: Get etaHEN version New + Old 这里只是打印不影响下载
-      - name: Get previous version
+      - name: Get etaHEN version New + Old 这里只是打印不影响下载
         run: |
           # 获取 GitHub 上的发布信息
           releases=$(curl -s https://api.github.com/repos/etaHEN/etaHEN/releases)
