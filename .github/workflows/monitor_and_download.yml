@@ -206,5 +206,5 @@ jobs:
           echo "$(cat log/latest_commit.txt)" > log/previous_commit.txt
           git add log/previous_commit.txt log/latest_commit.txt
           git add .  # Add the newly copied files
-          git commit -m "Bot"
+          git commit -m "$(date +'%Y-%m-%d %H:%M:%S')"
           git push origin main
